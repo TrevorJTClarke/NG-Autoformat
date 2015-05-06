@@ -6,70 +6,27 @@ function MediaContext () {
     this.element = void 0;
     this.elIdx = 0;
 
-    function MediaItem (){
-        return {};
-    }
-
-    var setLocation = function(href) {
+    /**
+     * parses the URL String and returns an object containing useful path items
+     */
+    this.getUri = function ( href ){
         var l = document.createElement("a");
         l.href = href;
         return l;
     };
-    var getLocation = function ( href ) {
-        var pathUrl = setLocation( href );
-        var pathParts = pathUrl.hostname.split(".");
-        return pathParts[pathParts.length - 2];// + "." + pathParts[pathParts.length - 1];
-    };
-
-    function parseUri (str) {
-        var o   = parseUri.options,
-            m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
-            uri = {},
-            i   = 14;
-
-        while (i--) uri[o.key[i]] = m[i] || "";
-
-        uri[o.q.name] = {};
-        uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
-            if ($1) uri[o.q.name][$1] = $2;
-        });
-
-        return uri;
-    }
-
-    parseUri.options = {
-        strictMode: false,
-        key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
-        q:   {
-            name:   "queryKey",
-            parser: /(?:^|&)([^&=]*)=?([^&]*)/g
-        },
-        parser: {
-            strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
-            loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
-        }
-    };
-
-    this.get = function( mediaData, idx, callback) {
-        if(!mediaData){ throw new Error("No data specified!"); }
-        this.mediaItem = new MediaItem();
-        this.element = mediaData;
-        this.elIdx = idx;
-
-        // this method calls all the other small methods for finding and parsing. #yay! :)
-        this.findMeta();
-
-        // return with context data!!
-        callback( this.mediaItem );
-    };
 
     /**
-     * parses the URL String and returns an object containing useful path items
+     * get media file extension
      */
-    this.getUri = function ( elem ){
-        elem = elem || this.element;
-
-        return parseUri( elem.src );
+    this.fileType = function ( src ){
+        var ytRE = new RegExp("ytimg");
+        // var t = /.+\.([^?]+)(\?|$)/; //old
+        var t = /.+\.([^?]+)/;
+        // check if is youtube thumb, if so, return video type
+        if(ytRE.test(src)){
+            return "youtube";
+        }
+        return src.match(t)[1];
     };
 
     /**
@@ -97,11 +54,7 @@ function MediaContext () {
         _type = elem.nodeName;
         _src = elem.src;
 
-        if(_type === "DIV"){
-            // TODO: setup setup for instagram background-image check
-            _file = "quote";
-            finalType = typeMap[_file] + "/" + _file;
-        } else if(_type === "IMG"){
+        if(_type === "IMG"){
             _file = (elem.src) ? _self.fileType(elem.src) : "img";
             finalType = (_file !== "img") ? typeMap[_file] + "/" + _file : typeMap[_type];
         } else {
@@ -158,19 +111,5 @@ function MediaContext () {
             src: src,
             url: url
         };
-    };
-
-    /**
-     * get media file extension
-     */
-    this.fileType = function ( src ){
-        var ytRE = new RegExp("ytimg");
-        // var t = /.+\.([^?]+)(\?|$)/; //old
-        var t = /.+\.([^?]+)/;
-        // check if is youtube thumb, if so, return video type
-        if(ytRE.test(src)){
-            return "youtube";
-        }
-        return src.match(t)[1];
     };
 }

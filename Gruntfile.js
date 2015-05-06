@@ -8,7 +8,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         jasmine: {
             main: {
-                src: 'ng-autoformat.js',
+                src: 'src/**/*.js',
                 options: {
                     specs: 'tests/**/*.js',
                     outfile: 'tests/specs.html',

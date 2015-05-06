@@ -1,7 +1,7 @@
 /**
  * autoFormat
  * @author: Trevor Clarke
- * Filter for Links, youtube, hashtags, mentions, and more!
+ * Filter for Links, youtube, hashtags, and more!
  */
 App.filter('autoFormat', function () {
    //URLs starting with http://, https://, or ftp://
@@ -35,7 +35,7 @@ App.filter('autoFormat', function () {
 
    function replaceHashtags(str) {
       return str
-         .replace(/(^|\s)#(\w+)/g, '$1<a class="bbhtag" href="http://www.tumblr.com/tagged/$2">$2</a>');
+         .replace(/(^|\s)#(\w+)/g, '$1<a class="htag" href="http://www.tumblr.com/tagged/$2">$2</a>');
    }
 
    function replaceFontStyles(str) {

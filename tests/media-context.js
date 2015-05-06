@@ -31,6 +31,7 @@ describe("mediaContext Module", function() {
         });
     });
 
+    // Looks for file extentions
     describe("mediaContext fileType Method", function() {
 
         it("Can return .jpg file type", function() {
@@ -58,15 +59,93 @@ describe("mediaContext Module", function() {
         });
     });
 
-    // describe("mediaContext ", function() {
+    // returns the media type based on the element
+    describe("mediaContext getType Method", function() {
+        var _img = document.createElement("img");
+        var _iframe = document.createElement("iframe");
 
-    //     it("Can Parse URL", function() {
-    //         var finalUrl    = "https://www.youtube.com/watch?v=m5yCOSHeYn4";
-    //         var testId      = mF.getYoutubeID( data.youtube );
-    //         var testUrl     = mF.getYoutubeUrl( testId );
-    //         expect( testUrl ).toBeDefined();
-    //         expect( testUrl ).toEqual( finalUrl );
-    //     });
-    // });
+        it("Can return image type jpg", function() {
+            var img = _img;
+                img.setAttribute('src', 'http://img.youtube.com/vi/m5yCOSHeYn4/default.jpg');
+            var testType = mC.getType( img );
+            expect( testType ).toBeDefined();
+            expect( testType ).toEqual("image/jpg");
+            expect( testType ).not.toEqual("image/png");
+        });
+
+        it("Can return image type png", function() {
+            var img = _img;
+                img.setAttribute('src', 'http://cdn.grumpycats.com/wp-content/uploads/2012/09/GC-Gravatar-copy.png');
+            var testType = mC.getType( img );
+            expect( testType ).toBeDefined();
+            expect( testType ).toEqual("image/png");
+            expect( testType ).not.toEqual("image/jpg");
+        });
+
+        it("Can return video type youtube", function() {
+            var iframe = _iframe;
+                iframe.setAttribute('src', 'https://www.youtube.com/embed/m5yCOSHeYn4');
+            var testType = mC.getType( iframe );
+            expect( testType ).toBeDefined();
+            expect( testType ).toEqual("video/youtube");
+            expect( testType ).not.toEqual("video/vimeo");
+        });
+
+        it("Can return video type vimeo", function() {
+            var iframe = _iframe;
+                iframe.setAttribute('src', 'https://player.vimeo.com/video/50489180');
+            var testType = mC.getType( iframe );
+            expect( testType ).toBeDefined();
+            expect( testType ).toEqual("video/vimeo");
+            expect( testType ).not.toEqual("video/youtube");
+        });
+    });
+
+    // returns the useful media data based on the element and type found
+    describe("mediaContext getMediaSrcUrl Method", function() {
+        var _iframe = document.createElement("iframe");
+
+        it("Can return youtube video data", function() {
+            var ytUrl = "https://www.youtube.com/embed/m5yCOSHeYn4";
+            var iframe = _iframe;
+                iframe.setAttribute('src', ytUrl);
+            var data = {
+                src: ytUrl
+            };
+            var testType = mC.getType( iframe );
+            var testData = mC.getMediaSrcUrl( data, testType );
+
+            expect( testType ).toBeDefined();
+            expect( testType ).toEqual("video/youtube");
+            expect( testType ).not.toEqual("video/vimeo");
+
+            expect( testData ).toBeDefined();
+            expect( testData.url ).toBeDefined();
+            expect( testData.src ).toBeDefined();
+            expect( testData.url ).toEqual("https://www.youtube.com/watch?v=m5yCOSHeYn4");
+            expect( testData.src ).toEqual("m5yCOSHeYn4");
+        });
+
+        it("Can return vimeo video data", function() {
+            var vmUrl = "https://player.vimeo.com/video/50489180";
+            var iframe = _iframe;
+                iframe.setAttribute('src', vmUrl);
+            var data = {
+                src: vmUrl
+            };
+            var testType = mC.getType( iframe );
+            var testData = mC.getMediaSrcUrl( data, testType );
+
+            expect( testType ).toBeDefined();
+            expect( testType ).toEqual("video/vimeo");
+            expect( testType ).not.toEqual("video/youtube");
+
+            expect( testData ).toBeDefined();
+            expect( testData.url ).toBeDefined();
+            expect( testData.src ).toBeDefined();
+            expect( testData.url ).toEqual("http://vimeo.com/50489180");
+            expect( testData.src ).toEqual("50489180");
+        });
+    });
 
 });

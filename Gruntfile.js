@@ -8,7 +8,10 @@ module.exports = function(grunt) {
     grunt.initConfig({
         jasmine: {
             main: {
-                src: 'src/**/*.js',
+                src: [
+                    'src/**/*.js',
+                    '!src/format-filter.js', // need to add tests for this
+                ],
                 options: {
                     specs: 'tests/**/*.js',
                     outfile: 'tests/specs.html',
